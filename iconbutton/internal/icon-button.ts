@@ -21,7 +21,10 @@ import {
   setupDispatchHooks,
 } from '../../internal/events/dispatch-hooks.js';
 import {mixinElementInternals} from '../../labs/behaviors/element-internals.js';
-import {mixinFormAssociated} from '../../labs/behaviors/form-associated.js';
+import {
+  getFormValue,
+  mixinFormAssociated,
+} from '../../labs/behaviors/form-associated.js';
 import {mixinFormSubmitter} from '../../labs/behaviors/form-submitter.js';
 
 type LinkTarget = '_blank' | '_parent' | '_self' | '_top';
@@ -146,6 +149,13 @@ export class IconButton extends iconButtonBaseClass {
       },
       {capture: true},
     );
+  }
+
+  // A button only adds its name and value to the form data when it submits the
+  // form. `mixinFormSubmitter()` sets the form value on click, so by default no
+  // value is associated with the button.
+  override [getFormValue](): null {
+    return null;
   }
 
   protected override willUpdate() {

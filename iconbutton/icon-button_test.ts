@@ -346,6 +346,41 @@ describe('icon button tests', () => {
     });
   });
 
+  describe('forms', () => {
+    async function setupForm() {
+      const form = document.createElement('form');
+      form.addEventListener('submit', (event) => event.preventDefault());
+      const buttons = ['yes', 'no'].map((value) => {
+        const button = new MdIconButton();
+        button.setAttribute('name', 'answer');
+        button.setAttribute('value', value);
+        form.append(button);
+        return button;
+      });
+      env.render(html`${form}`);
+      await env.waitForStability();
+      return {form, buttons};
+    }
+
+    it('should not add its name and value to the form data until clicked', async () => {
+      const {form} = await setupForm();
+
+      expect([...new FormData(form).keys()]).toEqual([]);
+    });
+
+    it('should only submit the name and value of the clicked button', async () => {
+      const {form, buttons} = await setupForm();
+      let submitted: Array<[string, FormDataEntryValue]> = [];
+      form.addEventListener('submit', () => {
+        submitted = [...new FormData(form).entries()];
+      });
+
+      buttons[1].click();
+
+      expect(submitted).toEqual([['answer', 'no']]);
+    });
+  });
+
   async function setUpTest(type: string) {
     let template;
     switch (type) {

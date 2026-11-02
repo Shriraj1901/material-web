@@ -18,7 +18,10 @@ import {
   isActivationClick,
 } from '../../internal/events/form-label-activation.js';
 import {mixinElementInternals} from '../../labs/behaviors/element-internals.js';
-import {mixinFormAssociated} from '../../labs/behaviors/form-associated.js';
+import {
+  getFormValue,
+  mixinFormAssociated,
+} from '../../labs/behaviors/form-associated.js';
 import {mixinFormSubmitter} from '../../labs/behaviors/form-submitter.js';
 
 // Separate variable needed for closure.
@@ -96,6 +99,13 @@ export abstract class Button extends buttonBaseClass {
 
   @queryAssignedElements({slot: 'icon', flatten: true})
   private readonly assignedIcons!: HTMLElement[];
+
+  // A button only adds its name and value to the form data when it submits the
+  // form. `mixinFormSubmitter()` sets the form value on click, so by default no
+  // value is associated with the button.
+  override [getFormValue](): null {
+    return null;
+  }
 
   constructor() {
     super();
